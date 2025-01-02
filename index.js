@@ -230,6 +230,10 @@ function delay(ms) {
         const randEmail = randomEmail(); 
 
         const regis = await register(randEmail.email, password);
+        if(regis.code !== 0){
+            console.log(chalk.bold.red(`    Email ${randEmail.email} sudah terpakai untuk akun lain`))
+            continue;
+        }
 
         let otp = false;
         while (otp === false) {

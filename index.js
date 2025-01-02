@@ -49,7 +49,7 @@ async function register(email, password) {
 
     try {
         const response = await axios.post('https://gw.sosovalue.com/usercenter/email/anno/sendRegisterVerifyCode/V2', data);
-        console.log(chalk.green(`[-] Registrasi dengan email ${email} berhasil`))
+        console.log(chalk.green(`    Registrasi dengan email ${email} berhasil`))
         console.log(chalk.cyan(`    Menunggu kode verifikasi email....`))
         return response.data; 
     } catch (error) {
@@ -88,7 +88,6 @@ async function verifEmail(email, password, verifyCode, invitationCode) {
         const response = await axios.post('https://gw.sosovalue.com/usercenter/user/anno/v3/register', data);
         if(response.data.code === 0){
             console.log(chalk.bgGreen(`[-] Akun berhasil dibuat dengan kode referal ${invitationCode}`)); 
-            fs.appendFileSync('results.txt', `${email}|${password}|${invitationCode}\n`, 'utf8');
         }
         return response.data; 
     } catch (error) {
@@ -98,7 +97,83 @@ async function verifEmail(email, password, verifyCode, invitationCode) {
 }
 
 
-async function getOTP(email) {
+
+async function getOTPLogin(email) {
+    if (!email || typeof email !== 'string') {
+        throw new Error('Email harus berupa string');
+    }
+
+    const data = {
+        email: email
+    };
+
+    try {
+        const response = await axios.post('https://gw.sosovalue.com/usercenter/email/anno/sendNewDeviceVerifyCode', data);
+        if(response.data.code === 0){
+            console.log(chalk.cyan(`    Kode otp berhasil dikirimkan`)); 
+        }
+        return response.data; 
+    } catch (error) {
+        console.error('Error:', error.response ? error.response.data : error.message);
+        throw error; 
+    }
+}
+
+
+async function verifLogin(email, password, verifyCode) {
+    if (!email || typeof email !== 'string') {
+        throw new Error('Email harus berupa string');
+    }
+    if (!password || typeof password !== 'string') {
+        throw new Error('Password harus berupa string');
+    }
+    if (!verifyCode || typeof verifyCode !== 'string') {
+        throw new Error('VerifyCode harus berupa string');
+    }
+    
+    const encodedPassword = encodeBase64(password);
+
+    const data = {
+		isDifferent: true,
+        password: encodedPassword,
+        loginName: email,
+		type: 'portal',
+        verifyCode: verifyCode,
+    };
+
+    try {
+        const response = await axios.post('https://gw.sosovalue.com/authentication/auth/v2/emailPasswordLogin', data);
+        if(response.data.code === 0){
+            console.log(chalk.bold.green(`    Berhasil login, wallet address kamu ${response.data.data.walletAddress}`)); 
+        }
+        return response.data; 
+    } catch (error) {
+        console.error('Error:', error.response ? error.response.data : error.message);
+        throw error; 
+    }
+}
+
+async function loginToken(token, email,passwords) {
+  try {
+    const response = await axios.get('https://gw.sosovalue.com/authentication/user/getUserInfo', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        
+      }
+    });
+	fs.appendFileSync('results.txt', `${email}|${passwords}|${response.data.data.invitationCode}|isRobot: ${response.data.data.isRobot}|isSuspicious: ${response.data.data.isSuspicious}\n`, 'utf8');
+
+    return response;
+
+  } catch (error) {
+    console.error('Error:', error.message);
+    return false;
+  }
+}
+
+
+
+async function getOTP(email,index = 0) {
   try {
     const response = await axios.get(url, {
       headers: {
@@ -128,8 +203,8 @@ async function getOTP(email) {
     const regex = /SoSoValue\s*-\s*(\d+)/;
     const match = containerElements.match(regex);
     if (match) {
-        console.log(chalk.green("    Kode OTP: ", match[0].replace('SoSoValue - ','').trim()));
-        return match[0].replace('SoSoValue - ','').trim();
+        console.log(chalk.green("    Kode OTP: ", match[index].replace('SoSoValue - ','').trim()));
+        return match[index].replace('SoSoValue - ','').trim();
       } else {
         return false;
       }
@@ -139,15 +214,18 @@ async function getOTP(email) {
     return false;
   }
 }
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 (async () => {
+	
     const invite = readlineSync.question('[+] Invite code: ');
     const password = readlineSync.question('[+] Password: '); 
     const jumlahAkun = readlineSync.questionInt('[+] Jumlah akun yang ingin dibuat: ');
 
     for (let i = 0; i < jumlahAkun; i++) {
         console.log(chalk.bgMagenta(`[+] Membuat akun ke-${i + 1}:`));
-
-        
 
         const randEmail = randomEmail(); 
 
@@ -161,6 +239,36 @@ async function getOTP(email) {
 
         const verif = await verifEmail(randEmail.email, password, otp, invite);
 
-        console.log(`Akun ${i + 1} berhasil dibuat: ${randEmail.email}`);
+        console.log(`    Akun ${i + 1} berhasil dibuat: ${randEmail.email}`);
+		console.log(`    mencoba login untuk akun ${randEmail.email}`);
+		const regLogin = await getOTPLogin(randEmail.email);
+		if(regLogin.code !== 0){
+				console.log(chalk.bold.red(`    Permintaan login gagal, skin akun ${randEmail.email}`));
+				continue;
+		}
+		await delay(5000);
+		let optLogin = false;
+	
+		while (optLogin === false) {
+            optLogin = await getOTP(randEmail.name,1); 
+           
+        }
+		const verifLogins = await verifLogin(randEmail.email,password,optLogin);
+		if(verifLogins.code !== 0){
+			console.log(chalk.bold.red(`    Permintaan login gagal, skin akun ${randEmail.email}`));
+			continue;
+		}
+		const login = await loginToken(verifLogins.data.token,randEmail.email,password);
+		if(login.data.code !== 0){
+			console.log(chalk.bold.red(`    Permintaan login gagal, skin akun ${randEmail.email}`))
+			continue;
+		}
+		console.log(`    Berhasil login dengan data:`)
+		console.log(chalk.bold.cyan(`     -> Username: ${login.data.data.username}`));
+		console.log(chalk.bold.cyan(`     -> invitationCode: ${login.data.data.invitationCode}`));
+		console.log(chalk.bold.cyan(`     -> totalInvitations: ${login.data.data.totalInvitations}`));
+		console.log(chalk.bold.cyan(`     -> isRobot: ${login.data.data.isRobot}`));
+		console.log(chalk.bold.cyan(`     -> isSuspicious: ${login.data.data.isSuspicious}`));
+		console.log(chalk.bold.cyan(`     -> walletAddress: ${verifLogins.data.walletAddress}`));
     }
 })();

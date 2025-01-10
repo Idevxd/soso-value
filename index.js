@@ -221,7 +221,7 @@ function delay(ms) {
 (async () => {
 	
     const invite = readlineSync.question('[+] Invite code: ');
-    const password = readlineSync.question('[+] Password: soso0011'); 
+    const password = readlineSync.question('[+] Password: '); 
     const jumlahAkun = readlineSync.questionInt('[+] Number of Accounts You Wish to Create: ');
 
     for (let i = 0; i < jumlahAkun; i++) {

@@ -14,14 +14,14 @@ const { faker } = require('@faker-js/faker');
 
 
 
-function randomEmail(domain = 'gmail1ku.my.id') {
+function randomEmail(domain = 'gmailku.my.id') {
     const firstName = faker.person.firstName();  // Menggunakan faker.person.firstName()
     const lastName = faker.person.lastName();
 
     const cleanFirstName = firstName.replace(/[^a-zA-Z]/g, ''); 
     const cleanLastName = lastName.replace(/[^a-zA-Z]/g, '');   
 
-    const emailName = `${cleanFirstName.toLowerCase()}a${cleanLastName.toLowerCase()}`;
+    const emailName = `${cleanFirstName.toLowerCase()}.${cleanLastName.toLowerCase()}`;
 
     return {
         name: emailName,

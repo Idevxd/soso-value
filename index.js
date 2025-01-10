@@ -222,16 +222,16 @@ function delay(ms) {
 	
     const invite = readlineSync.question('[+] Invite code: ');
     const password = readlineSync.question('[+] Password: '); 
-    const jumlahAkun = readlineSync.questionInt('[+] Jumlah akun yang ingin dibuat: ');
+    const jumlahAkun = readlineSync.questionInt('[+] Number of Accounts You Wish to Create: ');
 
     for (let i = 0; i < jumlahAkun; i++) {
-        console.log(chalk.bgMagenta(`[+] Membuat akun ke-${i + 1}:`));
+        console.log(chalk.bgMagenta(`[+] Create an Account to-${i + 1}:`));
 
         const randEmail = randomEmail(); 
 
         const regis = await register(randEmail.email, password);
         if(regis.code !== 0){
-            console.log(chalk.bold.red(`    Email ${randEmail.email} sudah terpakai untuk akun lain`))
+            console.log(chalk.bold.red(`    Email ${randEmail.email} Already Used for Another Account`))
             continue;
         }
 
@@ -243,11 +243,11 @@ function delay(ms) {
 
         const verif = await verifEmail(randEmail.email, password, otp, invite);
 
-        console.log(`    Akun ${i + 1} berhasil dibuat: ${randEmail.email}`);
-		console.log(`    mencoba login untuk akun ${randEmail.email}`);
+        console.log(`    Account ${i + 1} Created Successfully: ${randEmail.email}`);
+		console.log(`    Trying to Login to Account ${randEmail.email}`);
 		const regLogin = await getOTPLogin(randEmail.email);
 		if(regLogin.code !== 0){
-				console.log(chalk.bold.red(`    Permintaan login gagal, skin akun ${randEmail.email}`));
+				console.log(chalk.bold.red(`    Login request failed, account skin ${randEmail.email}`));
 				continue;
 		}
 		await delay(5000);
@@ -259,12 +259,12 @@ function delay(ms) {
         }
 		const verifLogins = await verifLogin(randEmail.email,password,optLogin);
 		if(verifLogins.code !== 0){
-			console.log(chalk.bold.red(`    Permintaan login gagal, skin akun ${randEmail.email}`));
+			console.log(chalk.bold.red(`    Login request failed, account skin ${randEmail.email}`));
 			continue;
 		}
 		const login = await loginToken(verifLogins.data.token,randEmail.email,password);
 		if(login.data.code !== 0){
-			console.log(chalk.bold.red(`    Permintaan login gagal, skin akun ${randEmail.email}`))
+			console.log(chalk.bold.red(`    Login request failed, account skin ${randEmail.email}`))
 			continue;
 		}
 		console.log(`    Berhasil login dengan data:`)

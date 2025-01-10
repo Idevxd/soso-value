@@ -15,7 +15,7 @@
    - Now Go to Directory
      
    ```bash
-   cd sosovalue
+   cd soso-value
    ```
 
 2. **Instal Requirements:**

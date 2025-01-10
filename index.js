@@ -275,4 +275,8 @@ function delay(ms) {
 		console.log(chalk.bold.cyan(`     -> isSuspicious: ${login.data.data.isSuspicious}`));
 		console.log(chalk.bold.cyan(`     -> walletAddress: ${verifLogins.data.walletAddress}`));
     }
+
+  console.log("\n=== End of Process ===\n");
+
+	
 })();

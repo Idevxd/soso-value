@@ -10,7 +10,7 @@
 
 1. **Clone Repository:**
    ```bash
-   git clone https://github.com/Idevxd/sosovalue.git
+   git clone https://github.com/Idevxd/soso-value.git
    ```
    - Now Go to Directory
      

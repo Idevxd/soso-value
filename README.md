@@ -10,7 +10,7 @@
 
 1. **Clone Repository:**
    ```bash
-   git clone https://github.com/Idevxd/onefootball.git
+   git clone https://github.com/Idevxd/sosovalue.git
    ```
    - Now Go to Directory
      

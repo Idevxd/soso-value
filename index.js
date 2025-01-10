@@ -144,7 +144,7 @@ async function verifLogin(email, password, verifyCode) {
     try {
         const response = await axios.post('https://gw.sosovalue.com/authentication/auth/v2/emailPasswordLogin', data);
         if(response.data.code === 0){
-            console.log(chalk.bold.green(`    Berhasil login, wallet address kamu ${response.data.data.walletAddress}`)); 
+            console.log(chalk.bold.green(`    Successful login, your wallet address ${response.data.data.walletAddress}`)); 
         }
         return response.data; 
     } catch (error) {

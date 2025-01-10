@@ -29,7 +29,7 @@ function randomEmail(domain = 'gmailku.my.id') {
     };
 }
 async function register(email, password) {
-    console.log(`    Registrasi dengan email ${email} dalam proses..`)
+    console.log(`    Registration with email ${email} in process..`)
     if (!email || typeof email !== 'string') {
         throw new Error('Email harus berupa string');
     }
@@ -49,8 +49,8 @@ async function register(email, password) {
 
     try {
         const response = await axios.post('https://gw.sosovalue.com/usercenter/email/anno/sendRegisterVerifyCode/V2', data);
-        console.log(chalk.green(`    Registrasi dengan email ${email} berhasil`))
-        console.log(chalk.cyan(`    Menunggu kode verifikasi email....`))
+        console.log(chalk.green(`    Registration with email ${email} succeed`))
+        console.log(chalk.cyan(`    Waiting for email verification code....`))
         return response.data; 
     } catch (error) {
         console.error(chalk.red('[-] Error:', error.response ? error.response.data : error.message));
@@ -87,7 +87,7 @@ async function verifEmail(email, password, verifyCode, invitationCode) {
     try {
         const response = await axios.post('https://gw.sosovalue.com/usercenter/user/anno/v3/register', data);
         if(response.data.code === 0){
-            console.log(chalk.bgGreen(`[-] Akun berhasil dibuat dengan kode referal ${invitationCode}`)); 
+            console.log(chalk.bgGreen(`[-] Account successfully created with referral code ${invitationCode}`)); 
         }
         return response.data; 
     } catch (error) {
@@ -110,7 +110,7 @@ async function getOTPLogin(email) {
     try {
         const response = await axios.post('https://gw.sosovalue.com/usercenter/email/anno/sendNewDeviceVerifyCode', data);
         if(response.data.code === 0){
-            console.log(chalk.cyan(`    Kode otp berhasil dikirimkan`)); 
+            console.log(chalk.cyan(`    OTP code successfully sent`)); 
         }
         return response.data; 
     } catch (error) {
@@ -203,7 +203,7 @@ async function getOTP(email,index = 0) {
     const regex = /SoSoValue\s*-\s*(\d+)/;
     const match = containerElements.match(regex);
     if (match) {
-        console.log(chalk.green("    Kode OTP: ", match[index].replace('SoSoValue - ','').trim()));
+        console.log(chalk.green("    Code OTP: ", match[index].replace('SoSoValue - ','').trim()));
         return match[index].replace('SoSoValue - ','').trim();
       } else {
         return false;
@@ -225,7 +225,7 @@ function delay(ms) {
     const jumlahAkun = readlineSync.questionInt('[+] Number of Accounts You Wish to Create: ');
 
     for (let i = 0; i < jumlahAkun; i++) {
-        console.log(chalk.bgMagenta(`[+] Create an Account to-${i + 1}:`));
+        console.log(chalk.bgMagenta(`[+] Creating Account -${i + 1}:`));
 
         const randEmail = randomEmail(); 
 
@@ -267,7 +267,7 @@ function delay(ms) {
 			console.log(chalk.bold.red(`    Login request failed, account skin ${randEmail.email}`))
 			continue;
 		}
-		console.log(`    Berhasil login dengan data:`)
+		console.log(`    Successfully logged in with data:`)
 		console.log(chalk.bold.cyan(`     -> Username: ${login.data.data.username}`));
 		console.log(chalk.bold.cyan(`     -> invitationCode: ${login.data.data.invitationCode}`));
 		console.log(chalk.bold.cyan(`     -> totalInvitations: ${login.data.data.totalInvitations}`));

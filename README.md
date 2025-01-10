@@ -1,12 +1,10 @@
 # SoSo Value Auto Reff  
 
-**Onefootball AutoReff** is a tool designed for automatic operations on Onefootball airdrop  
-
----
 
 ## Features  
 ✅ Automatically creates accounts using Ref Code.
 
+---
 
 ## Installation
 
